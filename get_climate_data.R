@@ -36,9 +36,10 @@ names(PD)[4]<-c("SLP_Pa")
 
 #Need to find PD data for years 1864-1894 will use the following gridded data set.
 
-PD_hist<-brick("slp.mean.nc", varname="slp")
-PD_hist <- rotate(PD_hist)
-hist_extr<-extract(PD_hist, station_latlon[2,])[seq(3, by = 12, to = 2643)]
+#PD_hist<-brick("slp.mean.nc", varname="slp")
+#PD_hist <- rotate(PD_hist)
+#hist_extr<-extract(PD_hist, station_latlon[2,])[seq(3, by = 12, to = 2643)]
+load("PD_hist_extract.Rdata")
 Pd_hist_df<-data.frame(Year=seq(1800,to = 2020, by = 1), SLP=hist_extr)
 Pd_hist_df$SLP<-Pd_hist_df$SLP*100
 PD_hist_df_early<-Pd_hist_df$SLP[Pd_hist_df$Year>=1864 & Pd_hist_df$Year<1894]
