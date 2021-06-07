@@ -1,10 +1,11 @@
 library(ncdf4)
-ncin=nc_open("C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\psl_Amon_GISS-E2-H_rcp85_r1i1p1_215101-220012.nc")
+ncin=nc_open("psl_Amon_GISS-E2-H_rcp85_r1i1p1_215101-220012.nc")# Get CMIP5 data. Not included in the repository due to volume. 
+#Download it here- https://dataserver.nccs.nasa.gov/thredds/fileServer/CMIP5/NASA/GISS/rcp85/E2-H_rcp85_r1i1p1/psl_Amon_GISS-E2-H_rcp85_r1i1p1_205101-210012.nc
 print(ncin)
 #Rotate from 0 to 360 to -180 to 180
 library(raster)
 
-a <- brick("C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\psl_Amon_GISS-E2-H_rcp85_r1i1p1_215101-220012.nc", varname="psl")
+a <- brick("psl_Amon_GISS-E2-H_rcp85_r1i1p1_215101-220012.nc", varname="psl")
 rotated_psl <- rotate(a)
 
 
@@ -17,11 +18,11 @@ coordinates(station_latlon)=~LONGITUDE +LATITUDE
 
 Rey_slp<-data.frame(Year=seq(2151:2200), SLP=extract(rotated_psl, station_latlon[1,])[,seq(3, by = 12, to = 600)])
 PD_slp<-data.frame(Year=seq(2151:2200), SLP=extract(rotated_psl, station_latlon[2,])[,seq(3, by = 12, to = 600)])
-save(Rey_slp,PD_slp, file="C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\climate_Rey_PD.Rdata" )
+save(Rey_slp,PD_slp, file="climate_Rey_PD.Rdata" )
 #######################
 # Get mean and sd of Reykjavik and Ponta Delgada stations
 
-Rey<-read.csv("C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\SLP_Rey_March.csv")
+Rey<-read.csv("SLP_Rey_March.csv")
 Rey$SLP.mb.<-Rey$SLP.mb.*100
 names(Rey)[4]<-c("SLP_Pa")
 mean(Rey$SLP_Pa[which(Rey$Date>=1864 & Rey$Date <=1983)])
@@ -29,13 +30,13 @@ mean(Rey$SLP_Pa[which(Rey$Date>=1864 & Rey$Date <=1983)])
 # 771.3932 sd
 
 
-PD<-read.csv("C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\SLP_PD_March.csv")
+PD<-read.csv("SLP_PD_March.csv")
 PD$SLP.mb.<-PD$SLP.mb.*100
 names(PD)[4]<-c("SLP_Pa")
 
 #Need to find PD data for years 1864-1894 will use the following gridded data set.
 
-PD_hist<-brick("C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\slp.mean.nc", varname="slp")
+PD_hist<-brick("slp.mean.nc", varname="slp")
 PD_hist <- rotate(PD_hist)
 hist_extr<-extract(PD_hist, station_latlon[2,])[seq(3, by = 12, to = 2643)]
 Pd_hist_df<-data.frame(Year=seq(1800,to = 2020, by = 1), SLP=hist_extr)
@@ -52,7 +53,7 @@ PD_slp_norm<-(PD_slp$SLP-101860.5)/592.8365
 
 NAO_climate<-PD_slp_norm-Rey_slp_norm
 
-save(Rey_slp, PD_slp, Rey_slp_norm, PD_slp_norm, NAO_climate, file="C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\climate_NAO.Rdata")
+save(Rey_slp, PD_slp, Rey_slp_norm, PD_slp_norm, NAO_climate, file="climate_NAO.Rdata")
 
 ##############
 # tas 
@@ -84,7 +85,7 @@ for(i in c(1:nrow(grid_anom))){
   }
 }
 
-save(grid_anom, file="C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Climate Data\\grid_anom.Rdata")
+save(grid_anom, file="grid_anom.Rdata")
 
 
 # create function that gives the grid cell number given lat and loncreate
@@ -120,6 +121,6 @@ names(County)[10:59]<-anom_col_names
 
 plot(NAO_climate, type="l")
 
-save(County, NAO_climate, file="C:\\Users\\dhanu\\OneDrive\\FirstArrival\\SpatialMaxID\\Results14\\climate_run_data.Rdata")
+save(County, NAO_climate, file="climate_run_data.Rdata")
 
 
